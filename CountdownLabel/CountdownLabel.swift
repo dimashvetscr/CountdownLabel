@@ -115,9 +115,9 @@ public class CountdownLabel: LTMorphingLabel {
         setup()
     }
     
-    public convenience init(frame: CGRect, minutes: TimeInterval) {
+    public convenience init(frame: CGRect, seconds: TimeInterval) {
         self.init(frame: frame)
-        setCountDownTime(minutes: minutes)
+        setCountDownTime(seconds: seconds)
     }
     
     public convenience init(frame: CGRect, date: NSDate) {
@@ -135,16 +135,16 @@ public class CountdownLabel: LTMorphingLabel {
     }
     
     // MARK: - Setter Methods
-    public func setCountDownTime(minutes: TimeInterval) {
-        setCountDownTime(fromDate: NSDate(), minutes: minutes)
+    public func setCountDownTime(seconds: TimeInterval) {
+        setCountDownTime(fromDate: NSDate(), seconds: seconds)
     }
     
-    public func setCountDownTime(fromDate: NSDate, minutes: TimeInterval) {
+    public func setCountDownTime(fromDate: NSDate, seconds: TimeInterval) {
         self.fromDate = fromDate
         
-        targetTime = minutes
-        currentTime = minutes
-        diffDate = date1970.addingTimeInterval(minutes)
+        targetTime = seconds
+        currentTime = seconds
+        diffDate = date1970.addingTimeInterval(seconds)
         
         updateLabel()
     }
@@ -298,15 +298,13 @@ extension CountdownLabel {
         let calendar = Calendar.init(identifier: .gregorian);
         var labelText = timeFormat;
         let comp = calendar.dateComponents([.day, .hour, .minute, .second], from: date1970 as Date, to: to1970Date)
-        
-        if let day = comp.day ,let _ = timeFormat.range(of: "dd"){
-            labelText = labelText.replacingOccurrences(of: "dd", with: String.init(format: "%02ld", day))
-        }
-        if let hour = comp.hour ,let _ = timeFormat.range(of: "hh"){
-            labelText = labelText.replacingOccurrences(of: "hh", with: String.init(format: "%02ld", hour))
-        }
+    
         if let hour = comp.hour ,let _ = timeFormat.range(of: "HH"){
-            labelText = labelText.replacingOccurrences(of: "HH", with: String.init(format: "%02ld", hour))
+            if let days = comp.day {
+                labelText = labelText.replacingOccurrences(of: "HH", with: String.init(format: "%02ld", hour+days*24))
+            } else {
+                labelText = labelText.replacingOccurrences(of: "HH", with: String.init(format: "%02ld", hour))
+            }
         }
         if let minute = comp.minute ,let _ = timeFormat.range(of: "mm"){
             labelText = labelText.replacingOccurrences(of: "mm", with: String.init(format: "%02ld", minute))
